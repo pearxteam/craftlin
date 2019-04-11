@@ -24,6 +24,7 @@ val minecraftVersion: String by project
 val mcpMappingsVersion: String by project
 
 val forgelinVersion: String by project
+val carbidelinVersion: String by project
 
 val jdkVersion: String by project
 
@@ -48,10 +49,12 @@ java {
 repositories {
     maven { url = uri("http://dvs1.progwml6.com/files/maven") }
     maven { url = uri("https://maven.shadowfacts.net/") }
+    maven { url = uri("https://repo.pearx.ru/maven2/develop/") }
 }
 
 dependencies {
     "implementation"("net.shadowfacts:Forgelin:$forgelinVersion")
+    "implementation"("ru.pearx.carbidelin:carbidelin-collections-jvm:$carbidelinVersion")
 }
 
 configure<UserBaseExtension> {

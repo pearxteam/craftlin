@@ -1,8 +1,18 @@
+/*
+ * Copyright © 2019, PearX Team
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this file,
+ * You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
+
 package ru.pearx.craftlin
 
 import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent
 import org.apache.logging.log4j.Logger
+import net.minecraftforge.fml.common.SidedProxy
+
+
 
 @Mod(modLanguageAdapter = "net.shadowfacts.forgelin.KotlinAdapter", name = NAME, modid = ID, version = VERSION, acceptedMinecraftVersions = ACCEPTED_MINECRAFT_VERSIONS, dependencies = DEPENDENCIES)
 object Craftlin {
