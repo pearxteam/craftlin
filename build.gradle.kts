@@ -55,6 +55,8 @@ repositories {
 dependencies {
     "implementation"("net.shadowfacts:Forgelin:$forgelinVersion")
     "implementation"("ru.pearx.carbidelin:carbidelin-collections-jvm:$carbidelinVersion")
+    "implementation"("ru.pearx.carbidelin:carbidelin-colors-jvm:$carbidelinVersion")
+    "implementation"("ru.pearx.carbidelin:carbidelin-math-jvm:$carbidelinVersion")
 }
 
 configure<UserBaseExtension> {

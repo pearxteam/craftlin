@@ -11,9 +11,9 @@ import net.minecraft.client.renderer.GlStateManager
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
 import org.lwjgl.opengl.GL11
+import org.lwjgl.util.Point
 import ru.pearx.craftlin.client.gui.IGuiScreen
 import ru.pearx.craftlin.client.gui.IGuiScreenProvider
-
 
 @SideOnly(Side.CLIENT)
 open class Control {
@@ -23,7 +23,7 @@ open class Control {
     var parent: Control? = null
         private set(value) {
             field = value
-            if (parent != null) {
+            if (value != null) {
                 root = retrieveRoot()
                 guiScreen = retrieveGuiScreen()
             }
@@ -62,263 +62,207 @@ open class Control {
     private fun retrieveGuiScreen(): IGuiScreen? = if (root is IGuiScreenProvider) (root as IGuiScreenProvider).providedGuiScreen else null
     //endregion
 
-    private var width: Int = 0
-    private var height: Int = 0
-    private var x: Int = 0
-    private var y: Int = 0
-    var isVisible = true
-    var isFocused: Boolean = false
-        private set
-    var isSelected: Boolean = false
-        private set
-    var lastMouseX: Int = 0
-        private set
-    var lastMouseY: Int = 0
-        private set
-    private var initialized: Boolean = false
-
-
-    val transformedX: Int
-        get() = getX() + (if (parent == null) 0 else parent!!.offsetX) + ownOffsetX
-
-    val transformedY: Int
-        get() = getY() + (if (parent == null) 0 else parent!!.offsetY) + ownOffsetY
-
-    val offsetX: Int
-        get() = 0
-
-    val offsetY: Int
-        get() = 0
-
-    val ownOffsetX: Int
-        get() = 0
-
-    val ownOffsetY: Int
-        get() = 0
-
-    val overlay: GuiControlContainer.OverlayContainer?
-        get() {
-            val c = root
-            return if (c is IOverlayProvider) c!!.overlay else null
+    //region Position & Size
+    open var width: Int = 0
+        set(value) {
+            val prev = field
+            field = value
+            parent?.invokeChildWidthChanged(this, prev, value)
+            triggerMove()
+        }
+    open var height: Int = 0
+        set(value) {
+            val prev = field
+            field = value
+            parent?.invokeChildHeightChanged(this, prev, value)
+            triggerMove()
+        }
+    open var x: Int = 0
+        set(value) {
+            val prev = field
+            field = value
+            parent?.invokeChildXChanged(this, prev, value)
+            triggerMove()
+        }
+    open var y: Int = 0
+        set(value) {
+            val prev = field
+            field = value
+            parent?.invokeChildYChanged(this, prev, value)
+            triggerMove()
         }
 
-    val posOnScreen: Point
+    //todo val postition
+
+    private fun triggerMove() {
+        if (initialized) {
+            if (guiScreen != null && root != null) {
+                root!!.invokeMouseMove(guiScreen!!.mouseX, guiScreen!!.mouseY, 0, 0)
+            }
+        }
+    }
+
+    var offsetXChildren: Int = 0
+
+    var offsetYChildren: Int = 0
+
+    var offsetXOwn: Int = 0
+
+    var offsetYOwn: Int = 0
+
+    val transformedX: Int
+        get() = x + (parent?.offsetXChildren ?: 0) + offsetXOwn
+
+    val transformedY: Int
+        get() = y + (parent?.offsetYChildren ?: 0) + offsetYOwn
+
+    val positionOnScreen: Point
         get() {
             var x = transformedX
             var y = transformedY
+
             var parent = parent
             while (parent != null) {
-                x += parent.transformedY
-                y += parent.transformedY
-                parent = parent.parent
+                parent = parent.run {
+                    x += this.transformedX
+                    y += this.transformedY
+                    this.parent
+                }
             }
             return Point(x, y)
         }
+    //endregion
 
-    fun getWidth(): Int {
-        return width
-    }
+    //region Misc Properties
+    var isVisible = true
 
-    @JvmOverloads
-    fun setWidth(width: Int, triggerMove: Boolean = true) {
-        val prev = this.width
-        this.width = width
-        if (parent != null)
-            parent!!.invokeChildWidthChanged(this, prev, width)
-        if (triggerMove)
-            triggerMove()
-    }
+    var shouldStencil = false
 
-    fun getHeight(): Int {
-        return height
-    }
+    var isFocused: Boolean = false
+        private set
 
-    @JvmOverloads
-    fun setHeight(height: Int, triggerMove: Boolean = true) {
-        val prev = this.height
-        this.height = height
-        if (parent != null)
-            parent!!.invokeChildHeightChanged(this, prev, height)
-        if (triggerMove)
-            triggerMove()
-    }
+    var lastMouseX: Int = 0
+        private set
 
-    fun triggerMove() {
-        if (initialized) {
-            if (guiScreen != null && root != null) {
-                val main = root
-                main!!.invokeMouseMove(guiScreen!!.mouseX, guiScreen!!.mouseY, 0, 0)
-            }
-        }
-    }
+    var lastMouseY: Int = 0
+        private set
 
-    fun getX(): Int {
-        return x
-    }
+    private var initialized: Boolean = false
+    //endregion
 
-    @JvmOverloads
-    fun setX(x: Int, triggerMove: Boolean = true) {
-        val prev = this.x
-        this.x = x
-        if (parent != null)
-            parent!!.invokeChildXChanged(this, prev, x)
-        if (triggerMove)
-            triggerMove()
-    }
+    //region Overlay
+    val overlay: GuiControlContainer.OverlayContainer?
+        get() = if (root is IOverlayProvider) root?.overlay else null
+    //endregion
 
-    fun getY(): Int {
-        return y
-    }
-
-    @JvmOverloads
-    fun setY(y: Int, triggerMove: Boolean = true) {
-        val prev = this.y
-        this.y = y
-        if (parent != null)
-            parent!!.invokeChildYChanged(this, prev, y)
-        if (triggerMove)
-            triggerMove()
-    }
-
-
-    @JvmOverloads
-    fun setPos(x: Int, y: Int, triggerMove: Boolean = true) {
-        val prevX = this.x
-        val prevY = this.y
-        this.x = x
-        this.y = y
-        if (parent != null) {
-            parent!!.invokeChildXChanged(this, prevX, x)
-            parent!!.invokeChildYChanged(this, prevY, y)
-        }
-        if (triggerMove)
-            triggerMove()
-    }
-
-    @JvmOverloads
-    fun setSize(w: Int, h: Int, triggerMove: Boolean = true) {
-        val prevW = this.width
-        val prevH = this.height
-        this.width = w
-        this.height = h
-        if (parent != null) {
-            parent!!.invokeChildWidthChanged(this, prevW, w)
-            parent!!.invokeChildHeightChanged(this, prevH, h)
-        }
-        if (triggerMove)
-            triggerMove()
-    }
+    //region Selecting
+    var isSelected: Boolean = false
+        private set
 
     fun select() {
         root!!.select(this)
     }
 
     private fun select(toSelect: Control) {
-        isSelected = this === toSelect
+        isSelected = this == toSelect
         for (child in controls) {
             child.select(toSelect)
         }
     }
-
-    fun shouldStencil(): Boolean {
-        return false
-    }
-
-    //EVENTS
+    //endregion
 
 
-    fun render() {
+    //region Events
+    open fun render() {
 
     }
 
-    fun render2() {
+    open fun render2() {
 
     }
 
-    fun postRender() {
+    open fun postRender() {
 
     }
 
-    fun postRender2() {
+    open fun postRender2() {
 
     }
 
-    fun keyDown(keycode: Int) {
+    open fun keyDown(keycode: Int) {
 
     }
 
-    fun keyUp(keycode: Int) {
+    open fun keyUp(keycode: Int) {
 
     }
 
-    fun keyPress(key: Char, keycode: Int) {
+    open fun keyPress(key: Char, keycode: Int) {
 
     }
 
-    fun mouseDown(button: Int, x: Int, y: Int) {
+    open fun mouseDown(button: Int, x: Int, y: Int) {
 
     }
 
-    fun mouseUp(button: Int, x: Int, y: Int) {
+    open fun mouseUp(button: Int, x: Int, y: Int) {
 
     }
 
-    fun mouseMove(x: Int, y: Int, dx: Int, dy: Int) {
+    open fun mouseMove(x: Int, y: Int, dx: Int, dy: Int) {
 
     }
 
-    fun mouseEnter() {
+    open fun mouseEnter() {
 
     }
 
-    fun mouseLeave() {
+    open fun mouseLeave() {
 
     }
 
-    fun mouseWheel(delta: Int) {
+    open fun mouseWheel(delta: Int) {
 
     }
 
-    fun init() {
+    open fun init() {
 
     }
 
-    fun close() {
+    open fun close() {
 
     }
 
-    fun update() {
+    open fun update() {
 
     }
 
-    fun childXChanged(c: Control, prevX: Int, newX: Int) {
+    open fun childXChanged(c: Control, prevX: Int, newX: Int) {
 
     }
 
-    fun childYChanged(c: Control, prevY: Int, newY: Int) {
+    open fun childYChanged(c: Control, prevY: Int, newY: Int) {
 
     }
 
-    fun childWidthChanged(c: Control, prevW: Int, newW: Int) {
+    open fun childWidthChanged(c: Control, prevW: Int, newW: Int) {
 
     }
 
-    fun childHeightChanged(c: Control, prevH: Int, newH: Int) {
+    open fun childHeightChanged(c: Control, prevH: Int, newH: Int) {
 
     }
+    //endregion
 
-    //EVENT INVOKES
-
-
+    //region Event Invokes
     fun invokeRender(stencilLevel: Int) {
         if (!initialized)
             return
         if (isVisible) {
             GlStateManager.pushMatrix()
             GlStateManager.translate(transformedX.toFloat(), transformedY.toFloat(), 0f)
-            val stenc = shouldStencil()
             val flag = stencilLevel + 1
-            if (stenc) {
+            if (shouldStencil) {
                 GL11.glDisable(GL11.GL_TEXTURE_2D)
                 GL11.glEnable(GL11.GL_STENCIL_TEST)
                 GL11.glStencilFunc(GL11.GL_EQUAL, flag - 1, 0xFF)
@@ -343,10 +287,10 @@ open class Control {
                 cont.invokeRender(if (stenc) stencilLevel + 1 else stencilLevel)
             }
             postRender()
-            if (stenc) {
+            if (shouldStencil) {
                 GL11.glStencilFunc(GL11.GL_EQUAL, flag - 1, 0xFF)
             }
-            if (stenc && stencilLevel == 0)
+            if (shouldStencil && stencilLevel == 0)
                 GL11.glDisable(GL11.GL_STENCIL_TEST)
             GlStateManager.popMatrix()
         }
@@ -460,9 +404,10 @@ open class Control {
         mouseWheel(delta)
     }
 
-    fun invokeInit() {
+    fun invokeInit(parent: Control) {
         if (!initialized) {
             initialized = true
+            this.parent = parent
             init()
         }
         triggerMove()
@@ -505,14 +450,20 @@ open class Control {
     fun invokeClose() {
         if (!initialized)
             return
+        parent = null
+        invokeClosePrivate()
+    }
+
+    private fun invokeClosePrivate() {
         for (cont in controls)
-            cont.invokeClose()
+            cont.invokeClosePrivate()
         close()
     }
+    //endregion
 
     fun drawHoveringText(s: String, x: Int, y: Int) {
         GlStateManager.pushMatrix()
-        val pos = posOnScreen
+        val pos = positionOnScreen
         GlStateManager.translate(-pos.getX(), -pos.getY(), 0)
         guiScreen!!.drawHovering(s, x + pos.getX(), y + pos.getY())
         GlStateManager.popMatrix()

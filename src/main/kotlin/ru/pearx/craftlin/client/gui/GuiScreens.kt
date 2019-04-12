@@ -82,9 +82,3 @@ object OverlayGui : IGuiScreen {
     override fun close() {
     }
 }
-
-
-@SideOnly(Side.CLIENT)
-interface IGuiScreenProvider {
-    val providedGuiScreen: IGuiScreen
-}
