@@ -15,9 +15,6 @@ import ru.pearx.craftlin.client.gui.IGuiScreen
 import ru.pearx.craftlin.client.gui.IGuiScreen
 
 
-
-
-
 @SideOnly(Side.CLIENT)
 interface IGuiScreenProvider {
     val providedGuiScreen: IGuiScreen

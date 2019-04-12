@@ -7,13 +7,25 @@
 
 package ru.pearx.craftlin.client.gui.control
 
-import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.client.renderer.GlStateManager.*
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
-import org.lwjgl.opengl.GL11
-import org.lwjgl.util.Point
+import org.lwjgl.opengl.GL11.*
+import org.lwjgl.util.Rectangle
+import ru.pearx.carbidelin.math.IntPoint
 import ru.pearx.craftlin.client.gui.IGuiScreen
 import ru.pearx.craftlin.client.gui.IGuiScreenProvider
+import ru.pearx.craftlin.client.gui.drawRectangle
+
+typealias ControlEvent = (() -> Unit)?
+typealias ControlEventKey = ((keycode: Int) -> Unit)?
+typealias ControlEventKeyPress = ((keycode: Int, char: Char) -> Unit)?
+typealias ControlEventMouse = ((button: Int, x: Int, y: Int) -> Unit)?
+typealias ControlEventMouseMove = ((x: Int, y: Int, dx: Int, dy: Int) -> Unit)?
+typealias ControlEventMouseWheel = ((delta: Int) -> Unit)?
+typealias ControlEventChildPosChanged = ((c: Control, prevX: Int, newX: Int) -> Unit)?
+typealias ControlEventChildSizeChanged = ((c: Control, prevW: Int, newW: Int) -> Unit)?
+
 
 @SideOnly(Side.CLIENT)
 open class Control {
@@ -116,7 +128,7 @@ open class Control {
     val transformedY: Int
         get() = y + (parent?.offsetYChildren ?: 0) + offsetYOwn
 
-    val positionOnScreen: Point
+    val positionOnScreen: IntPoint
         get() {
             var x = transformedX
             var y = transformedY
@@ -129,7 +141,7 @@ open class Control {
                     this.parent
                 }
             }
-            return Point(x, y)
+            return IntPoint(x, y)
         }
     //endregion
 
@@ -171,87 +183,27 @@ open class Control {
     }
     //endregion
 
-
     //region Events
-    open fun render() {
-
-    }
-
-    open fun render2() {
-
-    }
-
-    open fun postRender() {
-
-    }
-
-    open fun postRender2() {
-
-    }
-
-    open fun keyDown(keycode: Int) {
-
-    }
-
-    open fun keyUp(keycode: Int) {
-
-    }
-
-    open fun keyPress(key: Char, keycode: Int) {
-
-    }
-
-    open fun mouseDown(button: Int, x: Int, y: Int) {
-
-    }
-
-    open fun mouseUp(button: Int, x: Int, y: Int) {
-
-    }
-
-    open fun mouseMove(x: Int, y: Int, dx: Int, dy: Int) {
-
-    }
-
-    open fun mouseEnter() {
-
-    }
-
-    open fun mouseLeave() {
-
-    }
-
-    open fun mouseWheel(delta: Int) {
-
-    }
-
-    open fun init() {
-
-    }
-
-    open fun close() {
-
-    }
-
-    open fun update() {
-
-    }
-
-    open fun childXChanged(c: Control, prevX: Int, newX: Int) {
-
-    }
-
-    open fun childYChanged(c: Control, prevY: Int, newY: Int) {
-
-    }
-
-    open fun childWidthChanged(c: Control, prevW: Int, newW: Int) {
-
-    }
-
-    open fun childHeightChanged(c: Control, prevH: Int, newH: Int) {
-
-    }
+    var render: ControlEvent = null
+    var renderSecondary: ControlEvent = null
+    var postRender: ControlEvent = null
+    var postRenderSecondary: ControlEvent = null
+    var keyDown: ControlEventKey = null
+    var keyUp: ControlEventKey = null
+    var keyPress: ControlEventKeyPress = null
+    var mouseDown: ControlEventMouse = null
+    var mouseUp: ControlEventMouse = null
+    var mouseMove: ControlEventMouseMove = null
+    var mouseEnter: ControlEvent = null
+    var mouseLeave: ControlEvent = null
+    var mouseWheel: ControlEventMouseWheel = null
+    var init: ControlEvent = null
+    var close: ControlEvent = null
+    var update: ControlEvent = null
+    var childXChanged: ControlEventChildPosChanged = null
+    var childYChanged: ControlEventChildPosChanged = null
+    var childWidthChanged: ControlEventChildSizeChanged = null
+    var childHeightChanged: ControlEventChildSizeChanged = null
     //endregion
 
     //region Event Invokes
@@ -259,56 +211,56 @@ open class Control {
         if (!initialized)
             return
         if (isVisible) {
-            GlStateManager.pushMatrix()
-            GlStateManager.translate(transformedX.toFloat(), transformedY.toFloat(), 0f)
+            pushMatrix()
+            translate(transformedX.toFloat(), transformedY.toFloat(), 0f)
             val flag = stencilLevel + 1
             if (shouldStencil) {
-                GL11.glDisable(GL11.GL_TEXTURE_2D)
-                GL11.glEnable(GL11.GL_STENCIL_TEST)
-                GL11.glStencilFunc(GL11.GL_EQUAL, flag - 1, 0xFF)
-                GL11.glStencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_INCR)
-                GL11.glStencilMask(0xFF)
-                GL11.glColorMask(false, false, false, false)
-                GL11.glDepthMask(false)
+                glDisable(GL_TEXTURE_2D)
+                glEnable(GL_STENCIL_TEST)
+                glStencilFunc(GL_EQUAL, flag - 1, 0xFF)
+                glStencilOp(GL_KEEP, GL_KEEP, GL_INCR)
+                glStencilMask(0xFF)
+                glColorMask(false, false, false, false)
+                glDepthMask(false)
                 if (stencilLevel == 0) {
-                    GL11.glClearStencil(0)
-                    GL11.glClear(GL11.GL_STENCIL_BUFFER_BIT)
+                    glClearStencil(0)
+                    glClear(GL_STENCIL_BUFFER_BIT)
                 }
-                DrawingTools.drawRectangle(0, 0, getWidth(), getHeight())
-                GL11.glEnable(GL11.GL_TEXTURE_2D)
-                GL11.glStencilFunc(GL11.GL_EQUAL, flag, 0xFF)
-                GL11.glStencilMask(0)
-                GL11.glColorMask(true, true, true, true)
-                GL11.glDepthMask(true)
+                drawRectangle(0, 0, width, height)
+                glEnable(GL_TEXTURE_2D)
+                glStencilFunc(GL_EQUAL, flag, 0xFF)
+                glStencilMask(0)
+                glColorMask(true, true, true, true)
+                glDepthMask(true)
             }
-            render()
+            render?.invoke()
             for (cont in controls) {
                 //todo check bounds
-                cont.invokeRender(if (stenc) stencilLevel + 1 else stencilLevel)
+                cont.invokeRender(if (shouldStencil) stencilLevel + 1 else stencilLevel)
             }
-            postRender()
+            postRender?.invoke()
             if (shouldStencil) {
-                GL11.glStencilFunc(GL11.GL_EQUAL, flag - 1, 0xFF)
+                glStencilFunc(GL_EQUAL, flag - 1, 0xFF)
             }
             if (shouldStencil && stencilLevel == 0)
-                GL11.glDisable(GL11.GL_STENCIL_TEST)
-            GlStateManager.popMatrix()
+                glDisable(GL_STENCIL_TEST)
+            popMatrix()
         }
     }
 
-    fun invokeRender2() {
+    fun invokeRenderSecondary() {
         if (!initialized)
             return
         if (isVisible) {
-            GlStateManager.pushMatrix()
-            GlStateManager.translate(transformedX.toFloat(), transformedY.toFloat(), 0f)
-            render2()
+            pushMatrix()
+            translate(transformedX.toFloat(), transformedY.toFloat(), 0f)
+            renderSecondary?.invoke()
             for (cont in controls) {
-                cont.invokeRender2()
+                cont.invokeRenderSecondary()
             }
-            postRender2()
+            postRenderSecondary?.invoke()
 
-            GlStateManager.popMatrix()
+            popMatrix()
         }
     }
 
@@ -317,7 +269,7 @@ open class Control {
             return
         for (cont in controls)
             cont.invokeKeyDown(keycode)
-        keyDown(keycode)
+        keyDown?.invoke(keycode)
     }
 
     fun invokeKeyUp(keycode: Int) {
@@ -325,15 +277,15 @@ open class Control {
             return
         for (cont in controls)
             cont.invokeKeyUp(keycode)
-        keyUp(keycode)
+        keyUp?.invoke(keycode)
     }
 
-    fun invokeKeyPress(key: Char, keycode: Int) {
+    fun invokeKeyPress(keycode: Int, char: Char) {
         if (!initialized)
             return
         for (cont in controls)
-            cont.invokeKeyPress(key, keycode)
-        keyPress(key, keycode)
+            cont.invokeKeyPress(keycode, char)
+        keyPress?.invoke(keycode, char)
     }
 
     fun invokeMouseDown(button: Int, x: Int, y: Int) {
@@ -341,14 +293,14 @@ open class Control {
         if (!initialized)
             return
         for (cont in controls) {
-            if (Rectangle(cont.transformedX, cont.transformedY, cont.getWidth(), cont.getHeight()).contains(x, y)) {
+            if (Rectangle(cont.transformedX, cont.transformedY, cont.width, cont.height).contains(x, y)) {
                 last = false
                 cont.invokeMouseDown(button, x - cont.transformedX, y - cont.transformedY)
             }
         }
         if (last) {
             select()
-            mouseDown(button, x, y)
+            mouseDown?.invoke(button, x, y)
         }
     }
 
@@ -357,13 +309,13 @@ open class Control {
         if (!initialized)
             return
         for (cont in controls) {
-            if (Rectangle(cont.transformedX, cont.transformedY, cont.getWidth(), cont.getHeight()).contains(x, y)) {
+            if (Rectangle(cont.transformedX, cont.transformedY, cont.width, cont.height).contains(x, y)) {
                 last = false
                 cont.invokeMouseUp(button, x - cont.transformedX, y - cont.transformedY)
             }
         }
         if (last)
-            mouseUp(button, x, y)
+            mouseUp?.invoke(button, x, y)
     }
 
     fun invokeMouseMove(x: Int, y: Int, dx: Int, dy: Int) {
@@ -371,12 +323,12 @@ open class Control {
             return
         var last = true
         for (cont in controls) {
-            if (cont.transformedX <= x && cont.transformedX + cont.getWidth() >= x && cont.transformedY <= y && cont.transformedY + cont.getHeight() >= y) {
+            if (cont.transformedX <= x && cont.transformedX + cont.width >= x && cont.transformedY <= y && cont.transformedY + cont.getHeight() >= y) {
                 cont.invokeMouseMove(x - cont.transformedX, y - cont.transformedY, dx, dy)
                 last = false
             }
         }
-        mouseMove(x, y, dx, dy)
+        mouseMove?.invoke(x, y, dx, dy)
         lastMouseX = x
         lastMouseY = y
         if (last)
@@ -386,13 +338,13 @@ open class Control {
     fun invokeMouseEnter() {
         if (!initialized)
             return
-        mouseEnter()
+        mouseEnter?.invoke()
     }
 
     fun invokeMouseLeave() {
         if (!initialized)
             return
-        mouseLeave()
+        mouseLeave?.invoke()
     }
 
     fun invokeMouseWheel(delta: Int) {
@@ -401,7 +353,7 @@ open class Control {
         for (cont in controls) {
             cont.invokeMouseWheel(delta)
         }
-        mouseWheel(delta)
+        mouseWheel?.invoke(delta)
     }
 
     fun invokeInit(parent: Control) {
@@ -418,31 +370,31 @@ open class Control {
     fun invokeChildXChanged(c: Control, prevX: Int, newX: Int) {
         if (!initialized)
             return
-        childXChanged(c, prevX, newX)
+        childXChanged?.invoke(c, prevX, newX)
     }
 
     fun invokeChildYChanged(c: Control, prevY: Int, newY: Int) {
         if (!initialized)
             return
-        childYChanged(c, prevY, newY)
+        childYChanged?.invoke(c, prevY, newY)
     }
 
     fun invokeChildWidthChanged(c: Control, prevW: Int, newW: Int) {
         if (!initialized)
             return
-        childWidthChanged(c, prevW, newW)
+        childWidthChanged?.invoke(c, prevW, newW)
     }
 
     fun invokeChildHeightChanged(c: Control, prevH: Int, newH: Int) {
         if (!initialized)
             return
-        childHeightChanged(c, prevH, newH)
+        childHeightChanged?.invoke(c, prevH, newH)
     }
 
     fun invokeUpdate() {
         if (!initialized)
             return
-        update()
+        update?.invoke()
         for (c in controls)
             c.invokeUpdate()
     }
@@ -457,16 +409,16 @@ open class Control {
     private fun invokeClosePrivate() {
         for (cont in controls)
             cont.invokeClosePrivate()
-        close()
+        close?.invoke()
     }
     //endregion
 
     fun drawHoveringText(s: String, x: Int, y: Int) {
-        GlStateManager.pushMatrix()
-        val pos = positionOnScreen
-        GlStateManager.translate(-pos.getX(), -pos.getY(), 0)
-        guiScreen!!.drawHovering(s, x + pos.getX(), y + pos.getY())
-        GlStateManager.popMatrix()
+        pushMatrix()
+        val screenPos = positionOnScreen
+        translate(-screenPos.x.toDouble(), -screenPos.y.toDouble(), 0)
+        guiScreen!!.drawHoveringText(s, x + screenPos.x, y + screenPos.y)
+        popMatrix()
     }
 
     companion object {
