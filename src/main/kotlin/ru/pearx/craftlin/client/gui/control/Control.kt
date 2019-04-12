@@ -14,7 +14,6 @@ import org.lwjgl.opengl.GL11.*
 import org.lwjgl.util.Rectangle
 import ru.pearx.carbidelin.math.IntPoint
 import ru.pearx.craftlin.client.gui.IGuiScreen
-import ru.pearx.craftlin.client.gui.IGuiScreenProvider
 import ru.pearx.craftlin.client.gui.drawRectangle
 
 typealias ControlEvent = (() -> Unit)?
@@ -29,6 +28,8 @@ typealias ControlEventChildSizeChanged = ((c: Control, prevW: Int, newW: Int) ->
 
 @SideOnly(Side.CLIENT)
 open class Control {
+    private var initialized: Boolean = false
+
     //region Children and Parent
     val controls = controlCollection(this)
 
@@ -145,13 +146,10 @@ open class Control {
         }
     //endregion
 
-    //region Misc Properties
+    //region Misc
     var isVisible = true
 
     var shouldStencil = false
-
-    var isFocused: Boolean = false
-        private set
 
     var lastMouseX: Int = 0
         private set
@@ -159,7 +157,13 @@ open class Control {
     var lastMouseY: Int = 0
         private set
 
-    private var initialized: Boolean = false
+    fun drawHoveringText(s: String, x: Int, y: Int) {
+        pushMatrix()
+        val screenPos = positionOnScreen
+        translate(-screenPos.x.toDouble(), -screenPos.y.toDouble(), 0.0)
+        guiScreen!!.drawHoveringText(s, x + screenPos.x, y + screenPos.y)
+        popMatrix()
+    }
     //endregion
 
     //region Overlay
@@ -180,6 +184,26 @@ open class Control {
         for (child in controls) {
             child.select(toSelect)
         }
+    }
+    //endregion
+
+    //region Focusing
+    var isFocused: Boolean = false
+        private set
+
+    fun setFocused() = root!!.setFocused(this)
+
+    private fun setFocused(toSelect: Control) {
+        if (isFocused && this != toSelect) {
+            isFocused = false
+            invokeMouseLeave()
+        }
+        if (!isFocused && this == toSelect) {
+            isFocused = true
+            invokeMouseEnter()
+        }
+        for (cont in controls)
+            cont.setFocused(toSelect)
     }
     //endregion
 
@@ -206,7 +230,7 @@ open class Control {
     var childHeightChanged: ControlEventChildSizeChanged = null
     //endregion
 
-    //region Event Invokes
+    //region Event Invocations
     fun invokeRender(stencilLevel: Int) {
         if (!initialized)
             return
@@ -323,7 +347,7 @@ open class Control {
             return
         var last = true
         for (cont in controls) {
-            if (cont.transformedX <= x && cont.transformedX + cont.width >= x && cont.transformedY <= y && cont.transformedY + cont.getHeight() >= y) {
+            if (cont.transformedX <= x && cont.transformedX + cont.width >= x && cont.transformedY <= y && cont.transformedY + cont.height >= y) {
                 cont.invokeMouseMove(x - cont.transformedX, y - cont.transformedY, dx, dy)
                 last = false
             }
@@ -360,7 +384,7 @@ open class Control {
         if (!initialized) {
             initialized = true
             this.parent = parent
-            init()
+            init?.invoke()
         }
         triggerMove()
     }
@@ -412,28 +436,4 @@ open class Control {
         close?.invoke()
     }
     //endregion
-
-    fun drawHoveringText(s: String, x: Int, y: Int) {
-        pushMatrix()
-        val screenPos = positionOnScreen
-        translate(-screenPos.x.toDouble(), -screenPos.y.toDouble(), 0)
-        guiScreen!!.drawHoveringText(s, x + screenPos.x, y + screenPos.y)
-        popMatrix()
-    }
-
-    companion object {
-
-        fun setFocused(c: Control, select: Control) {
-            if (c.isFocused && c !== select) {
-                c.isFocused = false
-                c.invokeMouseLeave()
-            }
-            if (!c.isFocused && c === select) {
-                c.isFocused = true
-                c.invokeMouseEnter()
-            }
-            for (cont in c.controls)
-                setFocused(cont, select)
-        }
-    }
 }

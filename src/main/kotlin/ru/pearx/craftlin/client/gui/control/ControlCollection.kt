@@ -9,29 +9,19 @@ package ru.pearx.craftlin.client.gui.control
 
 import ru.pearx.carbidelin.collections.event.eventCollectionBy
 
-private fun Control.setParentAndInit(parent: Control) {
-    this.parent = parent
-    this.invokeInit()
-}
-
-private fun Control.removeParentAndClose() {
-    this.invokeClose()
-    this.parent = null
-}
-
 fun controlCollection(parent: Control): Collection<Control> {
     return eventCollectionBy(arrayListOf()) {
         add { element ->
-            element.setParentAndInit(parent)
+            element.invokeInit(parent)
         }
 
         remove { element ->
-            element.removeParentAndClose()
+            element.invokeClose()
         }
 
         clear { elements ->
             for (element in elements)
-                element.removeParentAndClose()
+                element.invokeClose()
         }
     }
 }
