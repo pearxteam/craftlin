@@ -10,24 +10,30 @@ package ru.pearx.craftlin.client.gui.drawable
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.Minecraft
+import net.minecraft.client.renderer.GlStateManager.*
+import net.minecraft.entity.EntityLivingBase
 import ru.pearx.craftlin.client.gui.IGuiScreen
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.fml.common.thread.SidedThreadGroups.CLIENT
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
 import ru.pearx.craftlin.client.gui.drawTexture
+import net.minecraft.world.World
+import ru.pearx.craftlin.Craftlin
+import ru.pearx.craftlin.client.gui.drawEntity
+import java.lang.Exception
 
 
 @SideOnly(Side.CLIENT)
 class SimpleDrawable(
-    private val texture: ResourceLocation,
-    private val textureWidth: Int,
-    private val textureHeight: Int,
+    val texture: ResourceLocation,
+    val textureWidth: Int,
+    val textureHeight: Int,
     override val width: Int = textureWidth,
     override val height: Int = textureHeight,
-    private val u: Int = 0,
-    private val v: Int = 0,
-    private val transparent: Boolean = true
+    val u: Int = 0,
+    val v: Int = 0,
+    val transparent: Boolean = true
 ) : IGuiDrawable {
 
     override fun draw(screen: IGuiScreen, x: Int, y: Int) {
@@ -37,17 +43,17 @@ class SimpleDrawable(
 
 @SideOnly(Side.CLIENT)
 class AnimatedDrawable(
-    private val texture: ResourceLocation,
-    private val textureWidth: Int,
-    private val textureHeight: Int,
-    private val textureElementWidth: Int,
-    private val textureElementHeight: Int,
-    private val msDivider: Int,
-    private val elementWidth: Int = textureElementWidth,
-    private val elementHeight: Int = textureElementHeight,
-    private val xOffset: Int = 0,
-    private val yOffset: Int = 0,
-    private val transparent: Boolean = true
+    val texture: ResourceLocation,
+    val textureWidth: Int,
+    val textureHeight: Int,
+    val textureElementWidth: Int,
+    val textureElementHeight: Int,
+    val msDivider: Int,
+    val elementWidth: Int = textureElementWidth,
+    val elementHeight: Int = textureElementHeight,
+    val xOffset: Int = 0,
+    val yOffset: Int = 0,
+    val transparent: Boolean = true
 ) : IGuiDrawable {
     private val cycleSize = textureHeight / textureElementHeight
     private var current = 0
@@ -61,5 +67,37 @@ class AnimatedDrawable(
     override fun draw(screen: IGuiScreen, x: Int, y: Int) {
         current = (System.currentTimeMillis() / msDivider % cycleSize).toInt();
         drawTexture(texture, x + xOffset, y + yOffset, elementWidth, elementHeight, 0, current * textureElementHeight, textureWidth, textureHeight, transparent)
+    }
+}
+
+@SideOnly(Side.CLIENT)
+class EntityDrawable(
+    val entityClass: Class<out EntityLivingBase>,
+    val scale: Float,
+    val yOffset: Double
+) : IGuiDrawable {
+    private var entity: EntityLivingBase? = null
+    override val width: Int
+        get() = 0
+
+    override val height: Int
+        get() = 0
+
+    override fun draw(screen: IGuiScreen, x: Int, y: Int) {
+        if(entity == null) {
+            try {
+                entity = entityClass.getDeclaredConstructor(World::class.java).newInstance(Minecraft.getMinecraft().world)
+            }
+            catch(e: Exception) {
+                Craftlin.log.error("An error occurred while drawing an EntityDrawable", e)
+            }
+
+            if(entity != null) {
+                pushMatrix()
+                translate(0.0, yOffset, 0.0)
+                drawEntity(entity!!, x.toFloat(), y.toFloat(), scale, 30F, -30F, 0F)
+                popMatrix()
+            }
+        }
     }
 }

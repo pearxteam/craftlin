@@ -24,6 +24,7 @@ import org.lwjgl.opengl.GL11.*
 import ru.pearx.carbidelin.colors.Color
 import ru.pearx.carbidelin.math.FloatPoint
 import ru.pearx.carbidelin.math.calculateQuadraticBezierPoints
+import ru.pearx.craftlin.client.translate
 
 @SideOnly(Side.CLIENT)
 fun drawTexture(tex: ResourceLocation, x: Int, y: Int, width: Int, height: Int, u: Int = 0, v: Int = 0, texWidth: Int = width, texHeight: Int = height, transparent: Boolean = true) {
@@ -38,7 +39,7 @@ fun drawTexture(tex: ResourceLocation, x: Int, y: Int, width: Int, height: Int, 
 @SideOnly(Side.CLIENT)
 fun drawString(string: String, x: Int, y: Int, color: Color, width: Int = -1, shadow: Boolean = true, scale: Float = 1F, rend: FontRenderer = Minecraft.getMinecraft().fontRenderer) {
     pushMatrix()
-    translate(x.toFloat(), y.toFloat(), 0F)
+    translate(x, y, 0)
     scale(scale, scale, 0F)
     val shouldUseWidth = width >= 0
     if (shouldUseWidth) {
@@ -175,10 +176,10 @@ fun drawRectangle(x: Int, y: Int, width: Int, height: Int) {
 }
 
 @SideOnly(Side.CLIENT)
-fun drawEntity(ent: Entity, x: Float, y: Float, scale: Float, rotX: Float, rotY: Float, rotZ: Float) {
+fun <T : Entity> drawEntity(ent: T, x: Float, y: Float, scale: Float, rotX: Float, rotY: Float, rotZ: Float) {
     enableColorMaterial()
     pushMatrix()
-    translate(x, y, 50f)
+    translate(x, y, 50F)
     scale(-scale, scale, scale)
     rotate(180.0f, 0.0f, 0.0f, 1.0f)
     rotate(135.0f, 0.0f, 1.0f, 0.0f)
@@ -202,14 +203,14 @@ fun drawEntity(ent: Entity, x: Float, y: Float, scale: Float, rotX: Float, rotY:
 }
 
 @SideOnly(Side.CLIENT)
-fun drawItemStackGUI(stack: ItemStack, itemRend: RenderItem = Minecraft.getMinecraft().renderItem, fontRend: FontRenderer = Minecraft.getMinecraft().fontRenderer, x: Int, y: Int, scale: Float) {
+fun drawItemStackGUI(stack: ItemStack, x: Int, y: Int, scale: Float, renderItem: RenderItem = Minecraft.getMinecraft().renderItem, fontRenderer: FontRenderer = Minecraft.getMinecraft().fontRenderer) {
     pushMatrix()
-    translate(x.toFloat(), y.toFloat(), 0f)
+    translate(x, y, 0)
     scale(scale, scale, scale)
     enableGUIStandardItemLighting()
-    with(itemRend) {
+    with(renderItem) {
         renderItemAndEffectIntoGUI(Minecraft.getMinecraft().player, stack, 0, 0)
-        renderItemOverlays(fontRend, stack, 0, 0)
+        renderItemOverlays(fontRenderer, stack, 0, 0)
     }
     disableStandardItemLighting()
     popMatrix()

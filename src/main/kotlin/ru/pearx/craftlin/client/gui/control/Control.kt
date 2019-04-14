@@ -16,6 +16,7 @@ import ru.pearx.carbidelin.collections.event.eventCollectionBy
 import ru.pearx.carbidelin.math.IntPoint
 import ru.pearx.craftlin.client.gui.IGuiScreen
 import ru.pearx.craftlin.client.gui.drawRectangle
+import ru.pearx.craftlin.client.translate
 
 @SideOnly(Side.CLIENT)
 fun controlCollection(parent: Control): MutableCollection<Control> {
@@ -178,7 +179,7 @@ open class Control {
     fun drawHoveringText(s: String, x: Int, y: Int) {
         pushMatrix()
         val screenPos = positionOnScreen
-        translate(-screenPos.x.toDouble(), -screenPos.y.toDouble(), 0.0)
+        translate(-screenPos.x, -screenPos.y, 0)
         guiScreen!!.drawHoveringText(s, x + screenPos.x, y + screenPos.y)
         popMatrix()
     }
@@ -254,7 +255,7 @@ open class Control {
             return
         if (isVisible) {
             pushMatrix()
-            translate(transformedX.toFloat(), transformedY.toFloat(), 0f)
+            translate(transformedX, transformedY, 0)
             val flag = stencilLevel + 1
             if (shouldStencil) {
                 glDisable(GL_TEXTURE_2D)
@@ -295,7 +296,7 @@ open class Control {
             return
         if (isVisible) {
             pushMatrix()
-            translate(transformedX.toFloat(), transformedY.toFloat(), 0f)
+            translate(transformedX, transformedY, 0)
             renderSecondary?.invoke()
             for (cont in controls) {
                 cont.invokeRenderSecondary()

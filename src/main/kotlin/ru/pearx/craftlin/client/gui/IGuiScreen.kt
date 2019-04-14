@@ -8,6 +8,7 @@
 package ru.pearx.craftlin.client.gui
 
 import net.minecraft.client.Minecraft
+import net.minecraft.client.gui.FontRenderer
 import net.minecraft.client.renderer.RenderItem
 import net.minecraft.item.ItemStack
 import net.minecraftforge.fml.client.config.GuiUtils
@@ -46,6 +47,11 @@ interface IGuiScreen {
      */
     val renderItem: RenderItem
 
+    /**
+     * The FontRenderer instance.
+     */
+    val fontRenderer: FontRenderer
+
     fun drawHoveringText(stack: ItemStack, x: Int, y: Int)
 
     fun drawHoveringText(text: String, x: Int, y: Int)
@@ -70,6 +76,9 @@ object OverlayGui : IGuiScreen {
 
     override val renderItem: RenderItem
         get() = Minecraft.getMinecraft().renderItem
+
+    override val fontRenderer: FontRenderer
+        get() = Minecraft.getMinecraft().fontRenderer
 
     override fun drawHoveringText(stack: ItemStack, x: Int, y: Int) {
         GuiUtils.drawHoveringText(stack, listOf(), x, y, guiWidth, guiHeight, 300, Minecraft.getMinecraft().fontRenderer)

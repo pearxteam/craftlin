@@ -8,6 +8,7 @@
 package ru.pearx.craftlin.client.gui.screen
 
 import net.minecraft.client.Minecraft
+import net.minecraft.client.gui.FontRenderer
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.renderer.RenderItem
 import net.minecraft.item.ItemStack
@@ -37,6 +38,9 @@ class CraftlinGuiScreen(control: Control) : GuiScreen(), IGuiScreen {
 
     override val renderItem: RenderItem
         get() = itemRender
+
+    override val fontRenderer: FontRenderer
+        get() = super.fontRenderer
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
         drawDefaultBackground()

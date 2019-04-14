@@ -8,6 +8,7 @@
 package ru.pearx.craftlin.client.gui.container
 
 import net.minecraft.client.Minecraft
+import net.minecraft.client.gui.FontRenderer
 import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraft.client.renderer.GlStateManager.*
 import net.minecraft.client.renderer.RenderItem
@@ -25,14 +26,21 @@ class CraftlinGuiContainer(inventorySlotsIn: Container, control: Control) : GuiC
 
     override val guiWidth: Int
         get() = width
+
     override val guiHeight: Int
         get() = height
+
     override val mouseX: Int
         get() = mouseX()
+
     override val mouseY: Int
         get() = mouseY()
+
     override val renderItem: RenderItem
         get() = itemRender
+
+    override val fontRenderer: FontRenderer
+        get() = super.fontRenderer
 
     override fun drawHoveringText(stack: ItemStack, x: Int, y: Int) {
         renderToolTip(stack, x, y)
