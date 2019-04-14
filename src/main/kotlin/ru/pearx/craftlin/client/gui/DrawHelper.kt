@@ -26,9 +26,13 @@ import ru.pearx.carbidelin.math.FloatPoint
 import ru.pearx.carbidelin.math.calculateQuadraticBezierPoints
 
 @SideOnly(Side.CLIENT)
-fun drawTexture(tex: ResourceLocation, x: Int, y: Int, width: Int, height: Int, u: Float = 0F, v: Float = 0F, texWidth: Float = width.toFloat(), texHeight: Float = height.toFloat()) {
+fun drawTexture(tex: ResourceLocation, x: Int, y: Int, width: Int, height: Int, u: Int = 0, v: Int = 0, texWidth: Int = width, texHeight: Int = height, transparent: Boolean = true) {
+    if(transparent)
+        enableBlend()
     Minecraft.getMinecraft().textureManager.bindTexture(tex)
-    GuiScreen.drawModalRectWithCustomSizedTexture(x, y, u, v, width, height, texWidth, texHeight)
+    GuiScreen.drawModalRectWithCustomSizedTexture(x, y, u.toFloat(), v.toFloat(), width, height, texWidth.toFloat(), texHeight.toFloat())
+    if(transparent)
+        disableBlend()
 }
 
 @SideOnly(Side.CLIENT)

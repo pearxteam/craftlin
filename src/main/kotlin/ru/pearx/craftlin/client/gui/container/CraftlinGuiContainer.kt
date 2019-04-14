@@ -13,10 +13,13 @@ import net.minecraft.client.renderer.GlStateManager.*
 import net.minecraft.client.renderer.RenderItem
 import net.minecraft.inventory.Container
 import net.minecraft.item.ItemStack
+import net.minecraftforge.fml.relauncher.Side
+import net.minecraftforge.fml.relauncher.SideOnly
 import ru.pearx.craftlin.client.gui.*
 import ru.pearx.craftlin.client.gui.control.Control
 import ru.pearx.craftlin.client.gui.control.ControlWrapper
 
+@SideOnly(Side.CLIENT)
 class CraftlinGuiContainer(inventorySlotsIn: Container, control: Control) : GuiContainer(inventorySlotsIn), IGuiScreen {
     val wrapper: ControlWrapper = ControlWrapper(control, this)
 
