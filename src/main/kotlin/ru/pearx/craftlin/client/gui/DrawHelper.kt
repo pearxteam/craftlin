@@ -43,13 +43,13 @@ fun drawString(string: String, x: Int, y: Int, color: Color, width: Int = -1, sh
     }
     var yToRender = 0
     if (shouldUseWidth) {
-        for (s in string.trim().lineSequence()) {
+        for (s in string.lineSequence()) {
             rend.drawString(s, 0F, yToRender.toFloat(), color.argb, shadow)
             yToRender += getFontHeight(rend)
         }
     }
     else {
-        for (s in rend.wrapFormattedStringToWidth(string.trim(), width).lineSequence()) {
+        for (s in rend.wrapFormattedStringToWidth(string, width).lineSequence()) {
             rend.renderStringAligned(s, 0, yToRender, width, color.argb, shadow)
             yToRender += getFontHeight(rend)
         }
@@ -74,7 +74,7 @@ fun measureChar(char: Char, rend: FontRenderer = Minecraft.getMinecraft().fontRe
 
 @SideOnly(Side.CLIENT)
 fun measureStringHeight(string: String, width: Int = -1, rend: FontRenderer = Minecraft.getMinecraft().fontRenderer): Int =
-    (if (width >= 0) rend.wrapFormattedStringToWidth(string, width) else string).trim().lines().size * getFontHeight(rend)
+    (if (width >= 0) rend.wrapFormattedStringToWidth(string, width) else string).lines().size * getFontHeight(rend)
 
 @SideOnly(Side.CLIENT)
 fun getFontHeight(rend: FontRenderer = Minecraft.getMinecraft().fontRenderer) = rend.FONT_HEIGHT

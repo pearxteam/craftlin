@@ -12,9 +12,28 @@ import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
 import org.lwjgl.opengl.GL11.*
 import org.lwjgl.util.Rectangle
+import ru.pearx.carbidelin.collections.event.eventCollectionBy
 import ru.pearx.carbidelin.math.IntPoint
 import ru.pearx.craftlin.client.gui.IGuiScreen
 import ru.pearx.craftlin.client.gui.drawRectangle
+
+@SideOnly(Side.CLIENT)
+fun controlCollection(parent: Control): MutableCollection<Control> {
+    return eventCollectionBy(arrayListOf()) {
+        add { element ->
+            element.invokeInit(parent)
+        }
+
+        remove { element ->
+            element.invokeClose()
+        }
+
+        clear { elements ->
+            for (element in elements)
+                element.invokeClose()
+        }
+    }
+}
 
 typealias ControlEvent = (() -> Unit)?
 typealias ControlEventKey = ((keycode: Int) -> Unit)?
@@ -24,7 +43,6 @@ typealias ControlEventMouseMove = ((x: Int, y: Int, dx: Int, dy: Int) -> Unit)?
 typealias ControlEventMouseWheel = ((delta: Int) -> Unit)?
 typealias ControlEventChildPosChanged = ((c: Control, prevX: Int, newX: Int) -> Unit)?
 typealias ControlEventChildSizeChanged = ((c: Control, prevW: Int, newW: Int) -> Unit)?
-
 
 @SideOnly(Side.CLIENT)
 open class Control {
@@ -167,7 +185,7 @@ open class Control {
     //endregion
 
     //region Overlay
-    val overlay: GuiControlContainer.OverlayContainer?
+    val overlay: ControlWrapper.OverlayContainer?
         get() = if (root is IOverlayProvider) root?.overlay else null
     //endregion
 
@@ -231,7 +249,7 @@ open class Control {
     //endregion
 
     //region Event Invocations
-    fun invokeRender(stencilLevel: Int) {
+    open fun invokeRender(stencilLevel: Int) {
         if (!initialized)
             return
         if (isVisible) {
@@ -272,7 +290,7 @@ open class Control {
         }
     }
 
-    fun invokeRenderSecondary() {
+    open fun invokeRenderSecondary() {
         if (!initialized)
             return
         if (isVisible) {
@@ -288,7 +306,7 @@ open class Control {
         }
     }
 
-    fun invokeKeyDown(keycode: Int) {
+    open fun invokeKeyDown(keycode: Int) {
         if (!initialized)
             return
         for (cont in controls)
@@ -296,7 +314,7 @@ open class Control {
         keyDown?.invoke(keycode)
     }
 
-    fun invokeKeyUp(keycode: Int) {
+    open fun invokeKeyUp(keycode: Int) {
         if (!initialized)
             return
         for (cont in controls)
@@ -304,7 +322,7 @@ open class Control {
         keyUp?.invoke(keycode)
     }
 
-    fun invokeKeyPress(keycode: Int, char: Char) {
+    open fun invokeKeyPress(keycode: Int, char: Char) {
         if (!initialized)
             return
         for (cont in controls)
@@ -312,7 +330,7 @@ open class Control {
         keyPress?.invoke(keycode, char)
     }
 
-    fun invokeMouseDown(button: Int, x: Int, y: Int) {
+    open fun invokeMouseDown(button: Int, x: Int, y: Int) {
         var last = true
         if (!initialized)
             return
@@ -328,7 +346,7 @@ open class Control {
         }
     }
 
-    fun invokeMouseUp(button: Int, x: Int, y: Int) {
+    open fun invokeMouseUp(button: Int, x: Int, y: Int) {
         var last = true
         if (!initialized)
             return
@@ -342,7 +360,7 @@ open class Control {
             mouseUp?.invoke(button, x, y)
     }
 
-    fun invokeMouseMove(x: Int, y: Int, dx: Int, dy: Int) {
+    open fun invokeMouseMove(x: Int, y: Int, dx: Int, dy: Int) {
         if (!initialized)
             return
         var last = true
@@ -356,22 +374,22 @@ open class Control {
         lastMouseX = x
         lastMouseY = y
         if (last)
-            setFocused(root!!, this)
+            setFocused()
     }
 
-    fun invokeMouseEnter() {
+    open fun invokeMouseEnter() {
         if (!initialized)
             return
         mouseEnter?.invoke()
     }
 
-    fun invokeMouseLeave() {
+    open fun invokeMouseLeave() {
         if (!initialized)
             return
         mouseLeave?.invoke()
     }
 
-    fun invokeMouseWheel(delta: Int) {
+    open fun invokeMouseWheel(delta: Int) {
         if (!initialized)
             return
         for (cont in controls) {
@@ -380,7 +398,7 @@ open class Control {
         mouseWheel?.invoke(delta)
     }
 
-    fun invokeInit(parent: Control) {
+    open fun invokeInit(parent: Control?) {
         if (!initialized) {
             initialized = true
             this.parent = parent
@@ -391,31 +409,31 @@ open class Control {
 
     //todo invokeChildAdd, invokeChildRemove, invokeChildClear with before and after
 
-    fun invokeChildXChanged(c: Control, prevX: Int, newX: Int) {
+    open fun invokeChildXChanged(c: Control, prevX: Int, newX: Int) {
         if (!initialized)
             return
         childXChanged?.invoke(c, prevX, newX)
     }
 
-    fun invokeChildYChanged(c: Control, prevY: Int, newY: Int) {
+    open fun invokeChildYChanged(c: Control, prevY: Int, newY: Int) {
         if (!initialized)
             return
         childYChanged?.invoke(c, prevY, newY)
     }
 
-    fun invokeChildWidthChanged(c: Control, prevW: Int, newW: Int) {
+    open fun invokeChildWidthChanged(c: Control, prevW: Int, newW: Int) {
         if (!initialized)
             return
         childWidthChanged?.invoke(c, prevW, newW)
     }
 
-    fun invokeChildHeightChanged(c: Control, prevH: Int, newH: Int) {
+    open fun invokeChildHeightChanged(c: Control, prevH: Int, newH: Int) {
         if (!initialized)
             return
         childHeightChanged?.invoke(c, prevH, newH)
     }
 
-    fun invokeUpdate() {
+    open fun invokeUpdate() {
         if (!initialized)
             return
         update?.invoke()
@@ -423,7 +441,7 @@ open class Control {
             c.invokeUpdate()
     }
 
-    fun invokeClose() {
+    open fun invokeClose() {
         if (!initialized)
             return
         parent = null

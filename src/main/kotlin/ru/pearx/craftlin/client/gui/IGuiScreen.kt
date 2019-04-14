@@ -24,12 +24,12 @@ interface IGuiScreen {
     /**
      * The width of the screen.
      */
-    val width: Int
+    val guiWidth: Int
 
     /**
      * The height of the screen.
      */
-    val height: Int
+    val guiHeight: Int
 
     /**
      * The X position of the mouse pointer.
@@ -56,27 +56,27 @@ interface IGuiScreen {
 @SideOnly(Side.CLIENT)
 object OverlayGui : IGuiScreen {
 
-    override val width: Int
+    override val guiWidth: Int
         get() = Minecraft.getMinecraft().displayWidth
 
-    override val height: Int
+    override val guiHeight: Int
         get() = Minecraft.getMinecraft().displayHeight
 
     override val mouseX: Int
         get() = Mouse.getEventX()
 
     override val mouseY: Int
-        get() = height - Mouse.getEventY() - 1
+        get() = guiHeight - Mouse.getEventY() - 1
 
     override val renderItem: RenderItem
         get() = Minecraft.getMinecraft().renderItem
 
     override fun drawHoveringText(stack: ItemStack, x: Int, y: Int) {
-        GuiUtils.drawHoveringText(stack, listOf(), x, y, width, height, 300, Minecraft.getMinecraft().fontRenderer)
+        GuiUtils.drawHoveringText(stack, listOf(), x, y, guiWidth, guiHeight, 300, Minecraft.getMinecraft().fontRenderer)
     }
 
     override fun drawHoveringText(text: String, x: Int, y: Int) {
-        GuiUtils.drawHoveringText(text.lines(), x, y, width, height, 300, Minecraft.getMinecraft().fontRenderer)
+        GuiUtils.drawHoveringText(text.lines(), x, y, guiWidth, guiHeight, 300, Minecraft.getMinecraft().fontRenderer)
     }
 
     override fun close() {

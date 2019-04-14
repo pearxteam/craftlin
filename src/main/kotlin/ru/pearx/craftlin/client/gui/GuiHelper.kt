@@ -7,16 +7,44 @@
 
 package ru.pearx.craftlin.client.gui
 
+import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiScreen
+import org.lwjgl.input.Keyboard
 import org.lwjgl.input.Mouse
-import net.minecraft.client.renderer.GlStateManager
-import net.minecraft.client.renderer.RenderHelper
-import net.minecraft.item.ItemStack
-import net.minecraftforge.fml.client.config.GuiUtils
+import ru.pearx.craftlin.client.gui.control.ControlWrapper
 
+fun GuiScreen.mouseX() = Mouse.getEventX() * width / mc.displayWidth
+fun GuiScreen.mouseY() = Mouse.getEventY() * height / mc.displayHeight - 1
 
-val GuiScreen.mouseX
-    get() = Mouse.getEventX() * width / mc.displayWidth
+fun GuiScreen.closeGui() {
+    with(Minecraft.getMinecraft()) {
+        if (currentScreen == this)
+            displayGuiScreen(null)
+    }
+}
 
-val GuiScreen.mouseY
-    get() = Mouse.getEventY() * height / mc.displayHeight - 1
+fun ControlWrapper.handleKeyboardInput() {
+    if (Keyboard.getEventKeyState())
+        invokeKeyDown(Keyboard.getEventKey())
+    else
+        invokeKeyUp(Keyboard.getEventKey())
+}
+
+fun ControlWrapper.keyTyped(keyCode: Int, char: Char) {
+    invokeKeyPress(keyCode, char)
+}
+
+fun ControlWrapper.handleMouseInput(gui: IGuiScreen) {
+    if (Mouse.getEventButton() != -1) {
+        if (Mouse.getEventButtonState())
+            invokeMouseDown(Mouse.getEventButton(), gui.mouseX - x, gui.mouseY - y)
+        else
+            invokeMouseUp(Mouse.getEventButton(), gui.mouseX - x, gui.mouseY - y)
+    }
+    if (Mouse.getEventDX() != 0 || Mouse.getEventDY() != 0) {
+        invokeMouseMove(gui.mouseX - x, gui.mouseY - y, Mouse.getEventDX(), -Mouse.getEventDY())
+    }
+    if (Mouse.getEventDWheel() != 0) {
+        invokeMouseWheel(Mouse.getEventDWheel())
+    }
+}
