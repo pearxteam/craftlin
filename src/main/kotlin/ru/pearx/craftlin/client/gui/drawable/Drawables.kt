@@ -7,21 +7,18 @@
 
 package ru.pearx.craftlin.client.gui.drawable
 
-import net.minecraft.client.renderer.GlStateManager
-import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.GlStateManager.*
+import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
-import ru.pearx.craftlin.client.gui.IGuiScreen
 import net.minecraft.util.ResourceLocation
-import net.minecraftforge.fml.common.thread.SidedThreadGroups.CLIENT
+import net.minecraft.world.World
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
-import ru.pearx.craftlin.client.gui.drawTexture
-import net.minecraft.world.World
 import ru.pearx.craftlin.Craftlin
+import ru.pearx.craftlin.client.gui.IGuiScreen
 import ru.pearx.craftlin.client.gui.drawEntity
-import java.lang.Exception
+import ru.pearx.craftlin.client.gui.drawTexture
 
 
 @SideOnly(Side.CLIENT)
@@ -71,12 +68,15 @@ class AnimatedDrawable(
 }
 
 @SideOnly(Side.CLIENT)
+inline fun <reified T : Entity> EntityDrawable(scale: Float, yOffset: Double): EntityDrawable = EntityDrawable(T::class.java, scale, yOffset)
+
+@SideOnly(Side.CLIENT)
 class EntityDrawable(
-    val entityClass: Class<out EntityLivingBase>,
+    val entityClass: Class<out Entity>,
     val scale: Float,
     val yOffset: Double
 ) : IGuiDrawable {
-    private var entity: EntityLivingBase? = null
+    private var entity: Entity? = null
     override val width: Int
         get() = 0
 
@@ -84,20 +84,21 @@ class EntityDrawable(
         get() = 0
 
     override fun draw(screen: IGuiScreen, x: Int, y: Int) {
-        if(entity == null) {
+        if (entity == null) {
             try {
                 entity = entityClass.getDeclaredConstructor(World::class.java).newInstance(Minecraft.getMinecraft().world)
             }
-            catch(e: Exception) {
+            catch (e: Exception) {
                 Craftlin.log.error("An error occurred while drawing an EntityDrawable", e)
             }
+        }
 
-            if(entity != null) {
-                pushMatrix()
-                translate(0.0, yOffset, 0.0)
-                drawEntity(entity!!, x.toFloat(), y.toFloat(), scale, 30F, -30F, 0F)
-                popMatrix()
-            }
+        if (entity != null) {
+            pushMatrix()
+            translate(0.0, yOffset, 0.0)
+            drawEntity(entity!!, x.toFloat(), y.toFloat(), scale, 30F, -30F, 0F)
+            popMatrix()
         }
     }
 }
+

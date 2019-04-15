@@ -5,7 +5,7 @@
  * You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-package ru.pearx.craftlin.client.gui.control.containers
+package ru.pearx.craftlin.client.gui.control.standard.containers
 
 import net.minecraft.client.gui.inventory.GuiContainer
 import ru.pearx.craftlin.client.gui.control.Control

@@ -35,14 +35,16 @@ fun ControlWrapper.keyTyped(keyCode: Int, char: Char) {
 }
 
 fun ControlWrapper.handleMouseInput(gui: IGuiScreen) {
+    val evX = gui.mouseX - x
+    val evY = gui.mouseY - y
     if (Mouse.getEventButton() != -1) {
         if (Mouse.getEventButtonState())
-            invokeMouseDown(Mouse.getEventButton(), gui.mouseX - x, gui.mouseY - y)
+            invokeMouseDown(Mouse.getEventButton(), evX, evY)
         else
-            invokeMouseUp(Mouse.getEventButton(), gui.mouseX - x, gui.mouseY - y)
+            invokeMouseUp(Mouse.getEventButton(), evX, evY)
     }
     if (Mouse.getEventDX() != 0 || Mouse.getEventDY() != 0) {
-        invokeMouseMove(gui.mouseX - x, gui.mouseY - y, Mouse.getEventDX(), -Mouse.getEventDY())
+        invokeMouseMove(evX, evY, evX - lastMouseX, evY - lastMouseY)
     }
     if (Mouse.getEventDWheel() != 0) {
         invokeMouseWheel(Mouse.getEventDWheel())
