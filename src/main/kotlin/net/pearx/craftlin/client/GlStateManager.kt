@@ -5,7 +5,7 @@
  * You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-package ru.pearx.craftlin.client
+package net.pearx.craftlin.client
 
 import net.minecraft.client.renderer.GlStateManager
 

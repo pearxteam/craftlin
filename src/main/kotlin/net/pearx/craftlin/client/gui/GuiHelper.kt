@@ -5,13 +5,13 @@
  * You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-package ru.pearx.craftlin.client.gui
+package net.pearx.craftlin.client.gui
 
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiScreen
 import org.lwjgl.input.Keyboard
 import org.lwjgl.input.Mouse
-import ru.pearx.craftlin.client.gui.control.ControlWrapper
+import net.pearx.craftlin.client.gui.control.ControlWrapper
 
 fun GuiScreen.mouseX() = Mouse.getEventX() * width / mc.displayWidth
 fun GuiScreen.mouseY() = Mouse.getEventY() * height / mc.displayHeight - 1

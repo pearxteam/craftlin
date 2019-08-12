@@ -5,7 +5,7 @@
  * You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-package ru.pearx.craftlin.client.gui.drawable
+package net.pearx.craftlin.client.gui.drawable
 
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.GlStateManager.*
@@ -15,10 +15,10 @@ import net.minecraft.util.ResourceLocation
 import net.minecraft.world.World
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
-import ru.pearx.craftlin.Craftlin
-import ru.pearx.craftlin.client.gui.IGuiScreen
-import ru.pearx.craftlin.client.gui.drawEntity
-import ru.pearx.craftlin.client.gui.drawTexture
+import net.pearx.craftlin.Craftlin
+import net.pearx.craftlin.client.gui.IGuiScreen
+import net.pearx.craftlin.client.gui.drawEntity
+import net.pearx.craftlin.client.gui.drawTexture
 
 
 @SideOnly(Side.CLIENT)

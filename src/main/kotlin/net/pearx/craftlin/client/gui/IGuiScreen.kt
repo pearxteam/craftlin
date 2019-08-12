@@ -5,7 +5,7 @@
  * You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-package ru.pearx.craftlin.client.gui
+package net.pearx.craftlin.client.gui
 
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.FontRenderer

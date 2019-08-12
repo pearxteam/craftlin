@@ -5,7 +5,7 @@
  * You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-package ru.pearx.craftlin.client.gui.control
+package net.pearx.craftlin.client.gui.control
 
 import net.minecraft.client.renderer.GlStateManager.*
 import net.minecraftforge.fml.relauncher.Side
@@ -14,9 +14,9 @@ import org.lwjgl.opengl.GL11.*
 import org.lwjgl.util.Rectangle
 import ru.pearx.carbidelin.collections.event.eventCollectionBy
 import ru.pearx.carbidelin.math.IntPoint
-import ru.pearx.craftlin.client.gui.IGuiScreen
-import ru.pearx.craftlin.client.gui.drawRectangle
-import ru.pearx.craftlin.client.translate
+import net.pearx.craftlin.client.gui.IGuiScreen
+import net.pearx.craftlin.client.gui.drawRectangle
+import net.pearx.craftlin.client.translate
 
 @SideOnly(Side.CLIENT)
 fun controlCollection(parent: Control): MutableCollection<Control> {

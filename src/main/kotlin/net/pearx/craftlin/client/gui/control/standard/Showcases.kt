@@ -5,10 +5,10 @@
  * You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-package ru.pearx.craftlin.client.gui.control.standard
+package net.pearx.craftlin.client.gui.control.standard
 
 import org.lwjgl.input.Mouse.isButtonDown
-import ru.pearx.craftlin.client.gui.control.Control
+import net.pearx.craftlin.client.gui.control.Control
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.GlStateManager.*
@@ -19,9 +19,9 @@ import net.minecraftforge.fml.common.thread.SidedThreadGroups.CLIENT
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
 import ru.pearx.carbidelin.math.cycle
-import ru.pearx.craftlin.Craftlin
-import ru.pearx.craftlin.client.gui.drawEntity
-import ru.pearx.craftlin.client.translate
+import net.pearx.craftlin.Craftlin
+import net.pearx.craftlin.client.gui.drawEntity
+import net.pearx.craftlin.client.translate
 
 
 abstract class AbstractShowcase : Control() {

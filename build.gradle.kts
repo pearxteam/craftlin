@@ -39,7 +39,7 @@ val devBuildNumber: String? by project
 val githubAccessToken: String? by project
 
 version = if(devBuildNumber != null) "$modVersion-dev-$devBuildNumber" else modVersion
-group = "ru.pearx.craftlin"
+group = "net.pearx.craftlin"
 description = modDescription
 
 java {
@@ -49,7 +49,7 @@ java {
 repositories {
     maven { url = uri("http://dvs1.progwml6.com/files/maven") }
     maven { url = uri("https://maven.shadowfacts.net/") }
-    maven { url = uri("https://repo.pearx.ru/maven2/develop/") }
+    maven { url = uri("https://repo.pearx.net/maven2/develop/") }
 }
 
 dependencies {
@@ -81,12 +81,12 @@ publishing {
         maven {
             pearxCredentials()
             name = "develop"
-            url = uri("https://repo.pearx.ru/maven2/develop/")
+            url = uri("https://repo.pearx.net/maven2/develop/")
         }
         maven {
             pearxCredentials()
             name = "release"
-            url = uri("https://repo.pearx.ru/maven2/release/")
+            url = uri("https://repo.pearx.net/maven2/release/")
         }
     }
 

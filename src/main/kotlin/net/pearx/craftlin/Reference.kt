@@ -5,7 +5,7 @@
  * You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-package ru.pearx.craftlin
+package net.pearx.craftlin
 
 const val ID = "craftlin"
 const val NAME = "Craftlin"

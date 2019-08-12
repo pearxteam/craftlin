@@ -5,16 +5,16 @@
  * You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-package ru.pearx.craftlin.client.gui.drawable
+package net.pearx.craftlin.client.gui.drawable
 
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.GlStateManager.*
 import net.minecraft.item.ItemStack
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
-import ru.pearx.craftlin.client.gui.IGuiScreen
-import ru.pearx.craftlin.client.gui.drawItemStackGUI
-import ru.pearx.craftlin.client.translate
+import net.pearx.craftlin.client.gui.IGuiScreen
+import net.pearx.craftlin.client.gui.drawItemStackGUI
+import net.pearx.craftlin.client.translate
 
 
 @SideOnly(Side.CLIENT)

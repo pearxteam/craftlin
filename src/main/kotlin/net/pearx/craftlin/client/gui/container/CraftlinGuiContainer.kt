@@ -5,30 +5,31 @@
  * You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-package ru.pearx.craftlin.client.gui.screen
+package net.pearx.craftlin.client.gui.container
 
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.FontRenderer
-import net.minecraft.client.gui.GuiScreen
+import net.minecraft.client.gui.inventory.GuiContainer
+import net.minecraft.client.renderer.GlStateManager.*
 import net.minecraft.client.renderer.RenderItem
+import net.minecraft.inventory.Container
 import net.minecraft.item.ItemStack
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
-import org.lwjgl.input.Mouse
+import net.pearx.craftlin.client.gui.*
 import ru.pearx.craftlin.client.gui.*
-import ru.pearx.craftlin.client.gui.control.Control
-import ru.pearx.craftlin.client.gui.control.ControlWrapper
-
+import net.pearx.craftlin.client.gui.control.Control
+import net.pearx.craftlin.client.gui.control.ControlWrapper
 
 @SideOnly(Side.CLIENT)
-class CraftlinGuiScreen(control: Control) : GuiScreen(), IGuiScreen {
+class CraftlinGuiContainer(inventorySlotsIn: Container, control: Control) : GuiContainer(inventorySlotsIn), IGuiScreen {
     val wrapper: ControlWrapper = ControlWrapper(control, this)
 
     override val guiWidth: Int
         get() = width
 
     override val guiHeight: Int
-        get() = width
+        get() = height
 
     override val mouseX: Int
         get() = mouseX()
@@ -42,10 +43,27 @@ class CraftlinGuiScreen(control: Control) : GuiScreen(), IGuiScreen {
     override val fontRenderer: FontRenderer
         get() = super.fontRenderer
 
-    override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
-        drawDefaultBackground()
+    override fun drawHoveringText(stack: ItemStack, x: Int, y: Int) {
+        renderToolTip(stack, x, y)
+    }
+
+    override fun drawHoveringText(text: String, x: Int, y: Int) {
+        drawHoveringText(text.lines(), x, y)
+    }
+
+    override fun close() {
+        closeGui()
+    }
+
+    override fun drawGuiContainerBackgroundLayer(partialTicks: Float, mouseX: Int, mouseY: Int) {
+    }
+
+    override fun drawGuiContainerForegroundLayer(mouseX: Int, mouseY: Int) {
+        pushMatrix();
+        translate(-guiLeft.toDouble(), -guiTop.toDouble(), 0.0);
         wrapper.invokeRender(0)
         wrapper.invokeRenderSecondary()
+        popMatrix()
     }
 
     override fun handleKeyboardInput() {
@@ -59,22 +77,12 @@ class CraftlinGuiScreen(control: Control) : GuiScreen(), IGuiScreen {
     }
 
     override fun handleMouseInput() {
+        super.handleMouseInput()
         wrapper.handleMouseInput(this)
     }
 
-    override fun drawHoveringText(stack: ItemStack, x: Int, y: Int) {
-        renderToolTip(stack, x, y)
-    }
-
-    override fun drawHoveringText(text: String, x: Int, y: Int) {
-        drawHoveringText(text.lines(), x, y)
-    }
-
-    override fun doesGuiPauseGame(): Boolean {
-        return false
-    }
-
     override fun onGuiClosed() {
+        super.onGuiClosed()
         wrapper.invokeClose()
     }
 
@@ -84,10 +92,13 @@ class CraftlinGuiScreen(control: Control) : GuiScreen(), IGuiScreen {
     }
 
     override fun updateScreen() {
+        super.updateScreen()
         wrapper.invokeUpdate()
     }
 
-    override fun close() {
-        closeGui()
+    override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
+        drawDefaultBackground();
+        super.drawScreen(mouseX, mouseY, partialTicks);
+        renderHoveredToolTip(mouseX, mouseY);
     }
 }

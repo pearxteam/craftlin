@@ -5,10 +5,10 @@
  * You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-package ru.pearx.craftlin.client.gui.control.standard.containers
+package net.pearx.craftlin.client.gui.control.standard.containers
 
 import net.minecraft.client.gui.inventory.GuiContainer
-import ru.pearx.craftlin.client.gui.control.Control
+import net.pearx.craftlin.client.gui.control.Control
 
 
 open class GuiOnScreen : Control() {

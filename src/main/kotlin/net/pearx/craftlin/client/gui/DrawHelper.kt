@@ -5,7 +5,7 @@
  * You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-package ru.pearx.craftlin.client.gui
+package net.pearx.craftlin.client.gui
 
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.FontRenderer
@@ -24,7 +24,7 @@ import org.lwjgl.opengl.GL11.*
 import ru.pearx.carbidelin.colors.Color
 import ru.pearx.carbidelin.math.FloatPoint
 import ru.pearx.carbidelin.math.calculateQuadraticBezierPoints
-import ru.pearx.craftlin.client.translate
+import net.pearx.craftlin.client.translate
 
 @SideOnly(Side.CLIENT)
 fun drawTexture(tex: ResourceLocation, x: Int, y: Int, width: Int, height: Int, u: Int = 0, v: Int = 0, texWidth: Int = width, texHeight: Int = height, transparent: Boolean = true) {
