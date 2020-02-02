@@ -5,20 +5,22 @@
  * You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
+@file:SideOnly(Side.CLIENT)
+
 package net.pearx.craftlin.client.gui.control
 
-import net.minecraft.client.renderer.GlStateManager.*
+import net.minecraft.client.renderer.GlStateManager.popMatrix
+import net.minecraft.client.renderer.GlStateManager.pushMatrix
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
+import net.pearx.craftlin.client.gui.IGuiScreen
+import net.pearx.craftlin.client.gui.drawRectangle
+import net.pearx.craftlin.client.translate
 import org.lwjgl.opengl.GL11.*
 import org.lwjgl.util.Rectangle
 import ru.pearx.carbidelin.collections.event.eventCollectionBy
 import ru.pearx.carbidelin.math.IntPoint
-import net.pearx.craftlin.client.gui.IGuiScreen
-import net.pearx.craftlin.client.gui.drawRectangle
-import net.pearx.craftlin.client.translate
 
-@SideOnly(Side.CLIENT)
 fun controlCollection(parent: Control): MutableCollection<Control> {
     return eventCollectionBy(arrayListOf()) {
         add { element ->

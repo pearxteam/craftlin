@@ -5,13 +5,17 @@
  * You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
+@file:SideOnly(Side.CLIENT)
+
 package net.pearx.craftlin.client.gui
 
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiScreen
+import net.minecraftforge.fml.relauncher.Side
+import net.minecraftforge.fml.relauncher.SideOnly
+import net.pearx.craftlin.client.gui.control.ControlWrapper
 import org.lwjgl.input.Keyboard
 import org.lwjgl.input.Mouse
-import net.pearx.craftlin.client.gui.control.ControlWrapper
 
 fun GuiScreen.mouseX() = Mouse.getEventX() * width / mc.displayWidth
 fun GuiScreen.mouseY() = Mouse.getEventY() * height / mc.displayHeight - 1

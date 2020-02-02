@@ -15,8 +15,6 @@ import net.minecraft.item.ItemStack
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
 import net.pearx.craftlin.client.gui.*
-import org.lwjgl.input.Mouse
-import net.pearx.craftlin.client.gui.*
 import net.pearx.craftlin.client.gui.control.Control
 import net.pearx.craftlin.client.gui.control.ControlWrapper
 

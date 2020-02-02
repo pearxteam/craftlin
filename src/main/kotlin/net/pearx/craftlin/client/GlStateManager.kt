@@ -5,9 +5,13 @@
  * You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
+@file:SideOnly(Side.CLIENT)
+
 package net.pearx.craftlin.client
 
 import net.minecraft.client.renderer.GlStateManager
+import net.minecraftforge.fml.relauncher.Side
+import net.minecraftforge.fml.relauncher.SideOnly
 
 inline fun scale(x: Int, y: Int, z: Int) {
     GlStateManager.scale(x.toFloat(), y.toFloat(), z.toFloat())

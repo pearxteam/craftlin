@@ -5,6 +5,8 @@
  * You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
+@file:SideOnly(Side.CLIENT)
+
 package net.pearx.craftlin.client.gui
 
 import net.minecraft.client.Minecraft
@@ -20,23 +22,21 @@ import net.minecraft.item.ItemStack
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
+import net.pearx.craftlin.client.translate
 import org.lwjgl.opengl.GL11.*
 import ru.pearx.carbidelin.colors.Color
 import ru.pearx.carbidelin.math.FloatPoint
 import ru.pearx.carbidelin.math.calculateQuadraticBezierPoints
-import net.pearx.craftlin.client.translate
 
-@SideOnly(Side.CLIENT)
 fun drawTexture(tex: ResourceLocation, x: Int, y: Int, width: Int, height: Int, u: Int = 0, v: Int = 0, texWidth: Int = width, texHeight: Int = height, transparent: Boolean = true) {
-    if(transparent)
+    if (transparent)
         enableBlend()
     Minecraft.getMinecraft().textureManager.bindTexture(tex)
     GuiScreen.drawModalRectWithCustomSizedTexture(x, y, u.toFloat(), v.toFloat(), width, height, texWidth.toFloat(), texHeight.toFloat())
-    if(transparent)
+    if (transparent)
         disableBlend()
 }
 
-@SideOnly(Side.CLIENT)
 fun drawString(string: String, x: Int, y: Int, color: Color, width: Int = -1, shadow: Boolean = true, scale: Float = 1F, rend: FontRenderer = Minecraft.getMinecraft().fontRenderer) {
     pushMatrix()
     translate(x, y, 0)
@@ -63,7 +63,6 @@ fun drawString(string: String, x: Int, y: Int, color: Color, width: Int = -1, sh
     popMatrix()
 }
 
-@SideOnly(Side.CLIENT)
 fun measureString(string: String, rend: FontRenderer = Minecraft.getMinecraft().fontRenderer): Int {
     var maxWidth = 0
     for (s in string.lineSequence()) {
@@ -74,17 +73,13 @@ fun measureString(string: String, rend: FontRenderer = Minecraft.getMinecraft().
     return maxWidth
 }
 
-@SideOnly(Side.CLIENT)
 fun measureChar(char: Char, rend: FontRenderer = Minecraft.getMinecraft().fontRenderer): Int = rend.getCharWidth(char)
 
-@SideOnly(Side.CLIENT)
 fun measureStringHeight(string: String, width: Int = -1, rend: FontRenderer = Minecraft.getMinecraft().fontRenderer): Int =
     (if (width >= 0) rend.wrapFormattedStringToWidth(string, width) else string).lines().size * getFontHeight(rend)
 
-@SideOnly(Side.CLIENT)
 fun getFontHeight(rend: FontRenderer = Minecraft.getMinecraft().fontRenderer) = rend.FONT_HEIGHT
 
-@SideOnly(Side.CLIENT)
 fun drawHoveringText(string: String, x: Int, y: Int, color: Color, width: Int = -1, shadow: Boolean = true, scale: Float = 1F, rend: FontRenderer = Minecraft.getMinecraft().fontRenderer) {
     pushMatrix()
     translate(10F, 0F, 1F)
@@ -92,38 +87,33 @@ fun drawHoveringText(string: String, x: Int, y: Int, color: Color, width: Int = 
     popMatrix()
 }
 
-@SideOnly(Side.CLIENT)
 inline fun Tessellator.tessellate(glMode: Int, format: VertexFormat, block: BufferBuilder.() -> Unit) {
-        buffer.begin(glMode, format)
-        buffer.block()
-        draw()
+    buffer.begin(glMode, format)
+    buffer.block()
+    draw()
 }
 
-@SideOnly(Side.CLIENT)
 inline fun tessellate(glMode: Int, format: VertexFormat, block: BufferBuilder.() -> Unit) = Tessellator.getInstance().tessellate(glMode, format, block)
 
-@SideOnly(Side.CLIENT)
 private inline fun draw2D(block: () -> Unit) {
-        disableTexture2D()
-        enableBlend()
-        disableAlpha()
-        tryBlendFuncSeparate(SourceFactor.SRC_ALPHA, DestFactor.ONE_MINUS_SRC_ALPHA, SourceFactor.ONE, DestFactor.ZERO)
-        shadeModel(GL_SMOOTH)
-        block()
-        shadeModel(GL_FLAT)
-        disableBlend()
-        enableAlpha()
-        enableTexture2D()
+    disableTexture2D()
+    enableBlend()
+    disableAlpha()
+    tryBlendFuncSeparate(SourceFactor.SRC_ALPHA, DestFactor.ONE_MINUS_SRC_ALPHA, SourceFactor.ONE, DestFactor.ZERO)
+    shadeModel(GL_SMOOTH)
+    block()
+    shadeModel(GL_FLAT)
+    disableBlend()
+    enableAlpha()
+    enableTexture2D()
 }
 
-@SideOnly(Side.CLIENT)
 private inline fun drawLine(width: Float, block: () -> Unit) {
     GlStateManager.glLineWidth(width)
     draw2D(block)
     GlStateManager.glLineWidth(1F)
 }
 
-@SideOnly(Side.CLIENT)
 fun drawGradientRectangle(x: Int, y: Int, width: Int, height: Int, color1: Color, color2: Color = color1, color3: Color = color1, color4: Color = color1) {
     draw2D {
         tessellate(GL_QUADS, DefaultVertexFormats.POSITION_COLOR) {
@@ -138,7 +128,6 @@ fun drawGradientRectangle(x: Int, y: Int, width: Int, height: Int, color1: Color
     }
 }
 
-@SideOnly(Side.CLIENT)
 fun drawLine(x1: Int, y1: Int, x2: Int, y2: Int, width: Float, color1: Color, color2: Color) {
     drawLine(width) {
         tessellate(GL_LINES, DefaultVertexFormats.POSITION_COLOR) {
@@ -148,7 +137,6 @@ fun drawLine(x1: Int, y1: Int, x2: Int, y2: Int, width: Float, color1: Color, co
     }
 }
 
-@SideOnly(Side.CLIENT)
 fun drawBezier(deltaT: Float, width: Float, x0: Float, y0: Float, x1: Float, y1: Float, x2: Float, y2: Float, colorSupplier: (points: Array<FloatPoint>, point: FloatPoint, index: Int) -> Color) {
     drawLine(width) {
         tessellate(GL_LINE_STRIP, DefaultVertexFormats.POSITION_COLOR) {
@@ -161,7 +149,6 @@ fun drawBezier(deltaT: Float, width: Float, x0: Float, y0: Float, x1: Float, y1:
     }
 }
 
-@SideOnly(Side.CLIENT)
 fun drawRectangle(x: Int, y: Int, width: Int, height: Int) {
     disableTexture2D()
     tessellate(GL_QUADS, DefaultVertexFormats.POSITION) {
@@ -175,7 +162,6 @@ fun drawRectangle(x: Int, y: Int, width: Int, height: Int) {
     enableTexture2D()
 }
 
-@SideOnly(Side.CLIENT)
 fun <T : Entity> drawEntity(ent: T, x: Float, y: Float, scale: Float, rotX: Float, rotY: Float, rotZ: Float) {
     enableColorMaterial()
     pushMatrix()
@@ -202,7 +188,6 @@ fun <T : Entity> drawEntity(ent: T, x: Float, y: Float, scale: Float, rotX: Floa
     setActiveTexture(OpenGlHelper.defaultTexUnit)
 }
 
-@SideOnly(Side.CLIENT)
 fun drawItemStackGUI(stack: ItemStack, x: Int, y: Int, scale: Float, renderItem: RenderItem = Minecraft.getMinecraft().renderItem, fontRenderer: FontRenderer = Minecraft.getMinecraft().fontRenderer) {
     pushMatrix()
     translate(x, y, 0)
